@@ -1,4 +1,5 @@
-rootProject.name = 'gateway'
+rootProject.name = 'snetty'
 include 'tcpproxy'
 include 'netty-core'
+include 'demo'
 

@@ -20,6 +20,9 @@ import io.netty.channel.ChannelConfig;
 import io.netty.channel.ChannelOutboundBuffer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ServerChannel;
+import io.netty.util.concurrent.SingleThreadEventExecutor;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.io.IOException;
 import java.net.PortUnreachableException;
@@ -33,6 +36,8 @@ import java.util.List;
  */
 public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
 
+    private static final InternalLogger logger =
+            InternalLoggerFactory.getInstance(AbstractNioMessageChannel.class);
     /**
      * @see AbstractNioChannel#AbstractNioChannel(Channel, SelectableChannel, int)
      */
@@ -66,6 +71,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     for (;;) {
+                        logger.info("abstract nio message channel loop read, class:" + this.getClass());
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;

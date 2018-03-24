@@ -133,7 +133,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     private final SelectStrategy selectStrategy;
 
-    private volatile int ioRatio = 50;
+    private volatile int ioRatio = 50; // io 运行比例
     private int cancelledKeys;
     private boolean needsToSelectAgain;
 
@@ -405,9 +405,10 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             try {
                 switch (selectStrategy.calculateStrategy(selectNowSupplier, hasTasks())) {
                     case SelectStrategy.CONTINUE:
+                        System.out.println("nio event loop continue id:" + Thread.currentThread().getId());
                         continue;
                     case SelectStrategy.SELECT:
-                        System.out.println("nio event loop select id:" + Thread.currentThread().getId());
+                        System.out.println("nio event loop run() thread id:" + Thread.currentThread().getId());
                         select(wakenUp.getAndSet(false));
 
                         // 'wakenUp.compareAndSet(false, true)' is always evaluated
@@ -495,9 +496,12 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     }
 
     private void processSelectedKeys() {
+        System.out.println("nio event loop processSelectedKeys, key size:" + selectedKeys.size());
         if (selectedKeys != null) {
+            System.out.println("nio event loop processSelectedKeys, key is not null, class:" + this.getClass());
             processSelectedKeysOptimized();
         } else {
+            System.out.println("nio event loop processSelectedKeys, key is null, class:" + this.getClass());
             processSelectedKeysPlain(selector.selectedKeys());
         }
     }
@@ -753,6 +757,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 }
 
                 int selectedKeys = selector.select(timeoutMillis);
+                System.out.println("nio event loop select(), keys size:" + selectedKeys + ",class:" + this.getClass());
                 selectCnt ++;
 
                 if (selectedKeys != 0 || oldWakenUp || wakenUp.get() || hasTasks() || hasScheduledTasks()) {

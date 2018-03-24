@@ -5,6 +5,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import me.ele.gateway.tcpproxy.handler.MyHandler;
 
 /**
  * Created by liyuanchao on 3/11/18.
@@ -12,7 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class TcpServer {
     public static void main(String[] args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(2);
 
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -22,6 +23,7 @@ public class TcpServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new MyHandler());
                         }
                     });
 
@@ -38,7 +40,6 @@ public class TcpServer {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             System.out.println("channelActive");
-            ctx.fireChannelActive();
         }
 
         @Override
